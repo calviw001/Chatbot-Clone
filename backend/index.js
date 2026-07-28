@@ -18,6 +18,11 @@ app.use(
   })
 );
 
+// import routes
+import authRouter from "./routes/auth.routes.js";
+
+app.use("/auth", authRouter);
+
 app.get("/test", (req, res) => {
     res.json("hello")
 })
