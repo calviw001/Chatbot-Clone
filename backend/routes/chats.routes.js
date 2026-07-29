@@ -46,4 +46,31 @@ router.post("/add", authorizeMiddleware, async (req, res) => {
 })
 
 
+// Delete a selected chat from a logged in user
+router.delete("/delete/:id", authorizeMiddleware, async (req, res) => {
+    // Get the chat id
+    const chatId = req.params.id
+
+    // Get the user id
+    const userId = req.session.userId
+
+    try {
+        const db = connectToDB()
+
+        // Then delete the chat
+        const result = await db.query("DELETE FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
+
+        // Send a failure message if nothing was deleted
+        if(!result.affectedRows || result.affectedRows === 0) {
+            return res.status(404).json({message: "Chat failed to delete."})
+        }
+        return res.status(200).json({message: "Chat was deleted."})
+    }
+
+    catch(error) {
+        res.status(500).json(error)
+    }
+})
+
+
 export default router
