@@ -1,4 +1,5 @@
 import express from "express"
+import session from "express-session"
 import cors from "cors"
 import dotenv from "dotenv"
 
@@ -17,6 +18,20 @@ app.use(
     allowedHeaders: ["Authorization", "Content-Type"],
   })
 );
+
+// express-session configurations
+app.use(
+  session({
+    secret: process.env.SECRET_KEY,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,   // Only transmit cookie over https and not localhost if true (set to true for production)
+      httpOnly: true,  // Prevent client side JS from reading the cookie
+      maxAge: 1000 * 60 * 30
+    }
+  })
+)
 
 // import routes
 import authRouter from "./routes/auth.routes.js";
