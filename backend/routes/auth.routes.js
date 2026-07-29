@@ -1,6 +1,7 @@
 import { Router } from "express"
 import bcrypt from "bcrypt";
 import connectToDB from "../db/index.js"
+import { authorizeMiddleware } from "../middleware/authorize.js"
 
 const router = Router()
 
@@ -72,8 +73,13 @@ router.post('/login', async (req, res) => {
 // User logout route
 router.post('/logout', (req, res) => {
     // Destory the user session
-    req.session.destroy()
-    return res.status(200).json({message: "User has successfully logged out!"})
+    req.session.destroy((error) => {
+        if(error) {
+            return res.status(500).json({message: "Logout failed."})
+        }
+        res.clearCookie('connect.sid');
+        return res.status(200).json({message: "User has successfully logged out!"})
+    })
 })
 
 
