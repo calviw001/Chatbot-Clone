@@ -36,9 +36,11 @@ app.use(
 // import routes
 import authRouter from "./routes/auth.routes.js"
 import chatsRouter from "./routes/chats.routes.js"
+import messagesRouter from "./routes/messages.routes.js"
 
 app.use("/auth", authRouter)
 app.use("/chats", chatsRouter)
+app.use("/chats/messages", messagesRouter)
 
 app.get("/test", (req, res) => {
     res.json("hello")
