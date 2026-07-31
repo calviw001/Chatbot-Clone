@@ -33,16 +33,15 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
 })
 
 
-// Add and save a new message to the specified chat
-router.post("/add/:id", authorizeMiddleware, async (req, res) => {
+// Add and save a new user question to the specified chat
+router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
     // Get the user id
     const userId = req.session.userId
 
     // Get the chat id
     const chatId = req.params.id
 
-    // Get the role and content
-    const role = req.body.role
+    // Get the content
     const content = req.body.content
 
     try {
@@ -62,7 +61,7 @@ router.post("/add/:id", authorizeMiddleware, async (req, res) => {
         }
 
         // Then, add the new message
-        await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, role, content])
+        await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "user", content])
         return res.status(201).json({message: "A new message was added to the current chat!"})
     }
 
