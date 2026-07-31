@@ -24,8 +24,33 @@ router.get("/get", authorizeMiddleware, async (req, res) => {
 })
 
 
+// Select a selected chat from the user
+router.get("/get/:id", authorizeMiddleware, async (req, res) => {
+    // Get the chat id
+    const chatId = req.params.id
+    
+    // Get the user id
+    const userId = req.session.userId
+
+    try {
+        const db = connectToDB()
+
+        // Then select the just the selected caht
+        const [rows] = await db.query("SELECT * FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
+        return res.json(rows) 
+    }
+
+    catch(error) {
+        res.status(500).json(error)
+    }
+})
+
+
 // Add a new chat for a logged in user
 router.post("/add", authorizeMiddleware, async (req, res) => {
+    // Get the chat id
+    const chatId = req.params.id
+
     // Get the user id
     const userId = req.session.userId
 
