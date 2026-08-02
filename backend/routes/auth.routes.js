@@ -83,4 +83,12 @@ router.post('/logout', (req, res) => {
 })
 
 
+// Return session information if the user is logged in 
+router.get("/user", authorizeMiddleware, (req, res) => {
+    return res.json({
+        userId: req.session.userId,
+        username: req.session.userName
+    })
+})
+
 export default router

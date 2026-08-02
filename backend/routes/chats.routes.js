@@ -83,7 +83,7 @@ router.delete("/delete/:id", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // Then delete the chat
-        const result = await db.query("DELETE FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
+        const [result] = await db.query("DELETE FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
 
         // Send a failure message if nothing was deleted
         if(!result.affectedRows || result.affectedRows === 0) {
