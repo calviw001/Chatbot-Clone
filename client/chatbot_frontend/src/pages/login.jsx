@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import UserContext from '../context/UserContext'
 
 
 const Login = () => {
@@ -9,6 +10,8 @@ const Login = () => {
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const {setUser} = useContext(UserContext)
 
     const navigate = useNavigate()
 
@@ -30,7 +33,10 @@ const Login = () => {
             }
 
             // Then, attempt to login with the entered in user information
-            await axios.post("http://localhost:8000/auth/login", userInput, { withCredentials: true })
+            const response = await axios.post("http://localhost:8000/auth/login", userInput, { withCredentials: true })
+
+            // If successful, update the user data to show that the user is logged in 
+            setUser(response.data)
             navigate("/")
         } catch(error) {
     
