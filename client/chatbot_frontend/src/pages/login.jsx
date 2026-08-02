@@ -24,14 +24,18 @@ const Login = () => {
         }
 
         try{
-            
-            // Attempt to login with the entered in user information
+            // Throw an error if the user failed to fill in all fields
+            if (!username.trim() || !email.trim() || !password.trim()) {
+                throw new Error("Please fill in all fields.")
+            }
+
+            // Then, attempt to login with the entered in user information
             await axios.post("http://localhost:8000/auth/login", userInput, { withCredentials: true })
             navigate("/")
         } catch(error) {
     
-            // If an error occured, print it out  
-            console.log("Failed to login: ", error)
+            // If an error occured, just print it out for now  
+            console.log("Failed to login: ", error.response?.data?.message || error.message)
         }
     }
 
