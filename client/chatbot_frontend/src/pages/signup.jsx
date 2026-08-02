@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-
-const Login = () => {
+const Signup = () => {
 
     // Initialize all variables
     const [username, setUsername] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
 
     const navigate = useNavigate()
 
@@ -16,7 +16,7 @@ const Login = () => {
     const handleSubmit = async e => {
         e.preventDefault()
 
-        // Set up the input to the auth/login route
+        // Set up the input to the auth/signup route
         const userInput = {
             "username": username,
             "email": email,
@@ -29,13 +29,18 @@ const Login = () => {
                 throw new Error("Please fill in all fields.")
             }
 
-            // Then, attempt to login with the entered in user information
-            await axios.post("http://localhost:8000/auth/login", userInput, { withCredentials: true })
-            navigate("/")
+            // Also throw an error if the two passwords don't equal
+            if (password.trim() != confirmPassword.trim()) {
+                throw new Error("The provided passwords do not match.")
+            }
+
+            // Then, attempt to sign up with the entered in user information
+            await axios.post("http://localhost:8000/auth/signup", userInput, { withCredentials: true })
+            navigate("/auth/login")
         } catch(error) {
     
             // If an error occured, just print it out for now  
-            console.log("Failed to login: ", error.response?.data?.message || error.message)
+            console.log("Failed to sign up: ", error.response?.data?.message || error.message)
         }
     }
 
@@ -44,7 +49,7 @@ const Login = () => {
 
             <div className="relative flex flex-col justify-center items-center rounded-md drop-shadow-lg bg-white max-w-sm sm:max-w-md">
 
-                <h1 className="mt-4 text-2xl">Login</h1>
+                <h1 className="mt-4 text-2xl">Sign Up</h1>
 
                 <form className="p-6 flex flex-col justify-center" onSubmit={handleSubmit}>
 
@@ -84,6 +89,18 @@ const Login = () => {
                         />
                     </div>
 
+                    <div className="flex flex-col mt-2">
+                        <label htmlFor="confirmPassword">Confirm Password:</label>
+                        <input
+                            type="password"
+                            name="confirmPassword"
+                            id="confirmPassword"
+                            placeholder="confirm password"
+                            className="w-full sm:w-100 mt-2 py-3 px-3 rounded-lg bg-white border border-gray-100"
+                            onChange={(e) => {setConfirmPassword(e.target.value)}}
+                        />
+                    </div>
+
                     <button 
                         type="submit"
                         className="w-full sm:w-100 mt-2 py-3 px-3 rounded-lg text-white bg-gray-500 border border-gray-500"
@@ -92,7 +109,7 @@ const Login = () => {
                     </button>
 
                     <p className="flex gap-1 mt-2 justify-center items-center">
-                        Don't have an account? <Link to="/auth/signup">Sign Up!</Link>
+                        Already have an account? <Link to="/auth/login">Login!</Link>
                     </p>
 
                 </form>
@@ -103,4 +120,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default Signup
