@@ -45,7 +45,7 @@ const Signup = () => {
     }
 
     return (
-        <div className="relative flex justify-center items-center min-h-screen w-full bg-gray-100">
+        <main className="relative flex justify-center items-center min-h-screen w-full bg-gray-100">
 
             <div className="relative flex flex-col justify-center items-center rounded-md drop-shadow-lg bg-white max-w-sm sm:max-w-md">
 
@@ -116,7 +116,7 @@ const Signup = () => {
 
             </div>
 
-        </div>
+        </main>
     )
 }
 
