@@ -6,6 +6,7 @@ import Sidebar from '../components/sidebar'
 
 const Home = () => {
   // Initialize all variables
+  const [isOpen, setIsOpen] = useState(true)
   const {user, isLoading} = useContext(UserContext)
 
   const navigate = useNavigate()
@@ -26,8 +27,16 @@ const Home = () => {
   if (!user) return null
 
   return (
-    <div>
-      Main
+    <div className='flex bg-gray-100 min-h-screen'>
+
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
+      
+      <main className={`flex-1 ml-14 transition-all duration-200 ${isOpen ? 'lg:ml-64' : 'lg:ml-14'}`}> 
+        <header className='bg-white flex justify-end p-4 shadow'>
+          <div className='bg-gray-300 w-10 h-10 rounded-full'></div>
+        </header>
+      </main>
+
     </div>
   )
 }
