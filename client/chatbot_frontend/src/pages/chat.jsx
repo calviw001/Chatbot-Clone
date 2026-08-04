@@ -1,5 +1,6 @@
 import {useEffect, useState, useContext} from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { GoPlus } from "react-icons/go";
 import axios from 'axios'
 import UserContext from '../context/UserContext'
 import Sidebar from '../components/sidebar'
@@ -10,6 +11,7 @@ const Chat = () => {
   // Initialize all variables
   const [userChatMessages, setUserChatMessages] = useState([])
   const [isOpen, setIsOpen] = useState(true)
+  const [inputMessage, setInputMessage] = useState("")
   const {user, isLoading} = useContext(UserContext)
 
   const navigate = useNavigate()
@@ -70,6 +72,20 @@ const Chat = () => {
               <MessageTextBox message={userChatMessage.content} role={userChatMessage.role}></MessageTextBox>
             </div>
           ))}
+        </div>
+
+        {/*Add message input box*/}
+        <div className='bg-white sticky bottom-1 z-10 flex flex-col p-4 rounded-xl max-w-3xl mx-auto'>
+          <textarea
+            name="userMessage"
+            id="userMessage"
+            placeholder="Ask Anything"
+            rows={1}
+            className='flex-1 field-sizing-content resize-none p-2 outline-none focus:outline-none max-h-40 overflow-y-auto'
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+          />
+          <button className='flex justify-start cursor-pointer'><GoPlus size={24}/></button>
         </div>
 
       </main>
