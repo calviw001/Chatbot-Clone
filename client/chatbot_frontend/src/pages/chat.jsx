@@ -44,7 +44,7 @@ const Chat = () => {
       }
     }
     fetchAllChatMessages()
-  }, [])
+  }, [chatId])
 
   // Display 'Loading...' instead of the main content while waiting to check if there is a user currently logged in 
   if (isLoading) return <div>Loading...</div>
