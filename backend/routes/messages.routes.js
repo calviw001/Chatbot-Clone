@@ -16,15 +16,22 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
     try {
         const db = connectToDB()
 
-        // Then select all the messages from the selected chat from a logged in user
-        const [rows] = await db.query(
-            `SELECT * FROM messages 
-            INNER JOIN chats ON chats.id = messages.chat_id 
+        // First see if the specified chat has the same user id as the current logged in user
+        const [rows1] = await db.query(
+            `SELECT * FROM chats 
             INNER JOIN users ON users.id = chats.user_id 
-            WHERE messages.chat_id = ? AND users.id = ?`,
+            WHERE chats.id = ? AND users.id = ?`,
             [chatId, userId]
         )
-        return res.json(rows) 
+
+        // If the user is attempting to gets messages from a chat that does not belong to the current user, send an error message
+        if(rows1.length === 0) {
+            return res.status(404).json({message: "Cannot get messages from a chat that does not belong to the current user."})
+        }
+
+        // Then select all the messages from the selected chat from a logged in user
+        const [rows2] = await db.query(`SELECT * FROM messages WHERE messages.chat_id = ?`, [chatId])
+        return res.json(rows2) 
     }
 
     catch(error) {
