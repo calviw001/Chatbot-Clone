@@ -1,7 +1,8 @@
-import { useState, useContext } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { FiSidebar  } from "react-icons/fi";
-import { IoIosLogOut } from "react-icons/io";
+import { FiSidebar  } from "react-icons/fi"
+import { IoIosLogOut } from "react-icons/io"
+import { BsThreeDotsVertical } from "react-icons/bs"
 import axios from 'axios'
 import UserContext from '../context/UserContext'
 
@@ -9,9 +10,27 @@ import UserContext from '../context/UserContext'
 const Sidebar = ({ isOpen , setIsOpen}) => {
 
     // Initialize all variables
+    const [userChats, setUserChats] = useState([])
     const {setUser} = useContext(UserContext)
 
     const navigate = useNavigate()
+
+    // Get all of the user's chats from the database
+    useEffect(() => {
+        const fetchAllChats = async () => {
+            try {
+                // Put all of the chats in the 'userChats' variable if successful
+                const res = await axios.get("http://localhost:8000/chats/get", { withCredentials: true })
+                setUserChats(res.data)
+
+            } catch (error) {
+
+                // If an error occured, just print it out for now  
+                console.log("Failed to fetch chats: ", error.response?.data?.message || error.message)
+            }
+        }
+        fetchAllChats()
+    }, [])
 
     // Logout button functionality
     const handleLogout = async e => {
@@ -38,15 +57,34 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
             {/*Title and sidebar button*/}
             <div className='p-4 flex justify-between items-center shadow'>
                 <div className={`text-xl font-bold ${isOpen?"visible":"hidden"}`}>Chatbot-Clone</div>
-                <button className='p-2 font-bold' onClick={() => setIsOpen(!isOpen)}>
+                <button className='p-2 font-bold cursor-pointer' onClick={() => setIsOpen(!isOpen)}>
                     <FiSidebar size={24}/>
                 </button>
             </div>
 
+            {/*User chats*/}
+            <div className={`flex flex-col ${isOpen?"visible":"hidden"}`}>
+                <span className='ml-4 mt-4 font-bold'>Recent Chats:</span>
+                <div className='flex flex-col gap-2 py-3 px-3 h-130 overflow-y-auto'>
+                    {userChats.map((userChat) => (
+                        <div 
+                            key={userChat.id} 
+                            className='flex flex-row justify-between w-full p-2 rounded hover:bg-gray-100 cursor-pointer truncate'
+                            onClick={() => navigate(`/chat/${userChat.id}`)}
+                        >
+                            <h1>{userChat.title}</h1>
+                            <button className='rounded hover:bg-gray-300 cursor-pointer'>
+                                <BsThreeDotsVertical />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {/*Logout button*/}
-            <button className='absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 bottom-10' onClick={handleLogout}>
+            <button className='absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 bottom-10 cursor-pointer' onClick={handleLogout}>
                 <IoIosLogOut size={24}/> 
-                <span className={`${isOpen?"visible":"hidden"}`}>Logout</span>
+                <span className={`font-bold ${isOpen?"visible":"hidden"}`}>Logout</span>
             </button>
 
         </div>

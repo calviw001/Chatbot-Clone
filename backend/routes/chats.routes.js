@@ -14,7 +14,7 @@ router.get("/get", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // Then select all the chats with that user id
-        const [rows] = await db.query("SELECT * FROM chats WHERE user_id = ?", [userId])
+        const [rows] = await db.query("SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC", [userId])
         return res.json(rows) 
     }
 
