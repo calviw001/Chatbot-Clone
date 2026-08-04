@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FiSidebar  } from "react-icons/fi"
 import { IoIosLogOut } from "react-icons/io"
 import { BsThreeDotsVertical } from "react-icons/bs"
+import { CiCirclePlus } from "react-icons/ci";
 import axios from 'axios'
 import UserContext from '../context/UserContext'
 
@@ -62,10 +63,16 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
                 </button>
             </div>
 
+            {/*New chat button*/}
+            <button className='absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 mt-4 cursor-pointer' onClick={() => navigate('/')}>
+                <CiCirclePlus size={24}/> 
+                <span className={`font-bold ${isOpen?"visible":"hidden"}`}>New Chat</span>
+            </button>
+
             {/*User chats*/}
-            <div className={`flex flex-col ${isOpen?"visible":"hidden"}`}>
+            <div className={`flex flex-col mt-10 ${isOpen?"visible":"hidden"}`}>
                 <span className='ml-4 mt-4 font-bold'>Recent Chats:</span>
-                <div className='flex flex-col gap-2 py-3 px-3 h-130 overflow-y-auto'>
+                <div className='flex flex-col gap-2 py-3 px-3 h-120 overflow-y-auto'>
                     {userChats.map((userChat) => (
                         <div 
                             key={userChat.id} 
