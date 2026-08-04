@@ -1,5 +1,6 @@
 import {useEffect, useState, useContext} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import UserContext from '../context/UserContext'
 import Sidebar from '../components/sidebar'
 
@@ -29,12 +30,16 @@ const Home = () => {
   return (
     <div className='flex bg-gray-100 min-h-screen'>
 
+      {/*Sidebar*/}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen}/>
       
       <main className={`flex-1 ml-14 transition-all duration-200 ${isOpen ? 'lg:ml-64' : 'lg:ml-14'}`}> 
-        <header className='bg-white flex justify-end p-4 shadow'>
+        
+        {/*Header bar*/}
+        <header className='bg-white sticky top-0 z-10 flex justify-end p-4 shadow'>
           <div className='bg-gray-300 w-10 h-10 rounded-full'></div>
         </header>
+
       </main>
 
     </div>

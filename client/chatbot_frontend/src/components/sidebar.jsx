@@ -53,7 +53,7 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
 
 
     return (
-        <div className={`fixed bg-white min-h-screen transition-all duration-200 shadow ${isOpen?"w-64":"w-16"}`}>
+        <div className={`fixed bg-white min-h-screen z-20 transition-all duration-200 shadow ${isOpen?"w-64":"w-16"}`}>
 
             {/*Title and sidebar button*/}
             <div className='p-4 flex justify-between items-center shadow'>
