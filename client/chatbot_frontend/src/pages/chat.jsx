@@ -12,6 +12,7 @@ const Chat = () => {
   const [userChatMessages, setUserChatMessages] = useState([])
   const [isOpen, setIsOpen] = useState(true)
   const [inputMessage, setInputMessage] = useState("")
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(false);
   const {user, isLoading} = useContext(UserContext)
 
   const navigate = useNavigate()
@@ -62,6 +63,7 @@ const Chat = () => {
       if (!inputMessage.trim()) {
           throw new Error("Please ask a question.")
       }
+      setIsAddButtonDisabled(true)
 
       // Attempt to save and display the new user message
       const userMessage = await axios.post(`http://localhost:8000/chats/messages/add_user_question/${chatId}`, userInput, { withCredentials: true })
@@ -78,6 +80,8 @@ const Chat = () => {
 
       // If an error occured, just print it out for now
       console.log("Failed to display new messages: ", error.response?.data?.message || error.message)
+    } finally {
+      setIsAddButtonDisabled(false)
     }
   }
 
@@ -107,7 +111,7 @@ const Chat = () => {
           ))}
         </div>
 
-        {/*Add message input box*/}
+        {/*Add message input box and add button*/}
         <div className='bg-white sticky bottom-1 z-10 flex flex-col p-4 rounded-xl max-w-3xl mx-auto'>
           <textarea
             name="userMessage"
@@ -117,8 +121,9 @@ const Chat = () => {
             className='flex-1 field-sizing-content resize-none p-2 outline-none focus:outline-none max-h-40 overflow-y-auto'
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
+            disabled={isAddButtonDisabled}
           />
-          <button className='flex justify-start cursor-pointer' onClick={handleNewMessages}><GoPlus size={24}/></button>
+          <button className='flex justify-start cursor-pointer' onClick={handleNewMessages} disabled={isAddButtonDisabled}><GoPlus size={24}/></button>
         </div>
 
       </main>
