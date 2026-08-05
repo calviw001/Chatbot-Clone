@@ -5,7 +5,7 @@ import { chatbot } from "../ai/get_ai_response.js"
 
 const router = Router()
 
-// Select all messages from a specific chat
+// Select all messages from a specific, selected chat
 router.get("/get/:id", authorizeMiddleware, async (req, res) => {
     // Get the user id
     const userId = req.session.userId
@@ -16,8 +16,8 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
     try {
         const db = connectToDB()
 
-        // First see if the specified chat has the same user id as the current logged in user
-        const [rows1] = await db.query(
+        // First see if the selected chat has the same user id as the current logged in user
+        const [selectedChat] = await db.query(
             `SELECT * FROM chats 
             INNER JOIN users ON users.id = chats.user_id 
             WHERE chats.id = ? AND users.id = ?`,
@@ -25,13 +25,13 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
         )
 
         // If the user is attempting to gets messages from a chat that does not belong to the current user, send an error message
-        if(rows1.length === 0) {
+        if(selectedChat.length === 0) {
             return res.status(404).json({message: "Cannot get messages from a chat that does not belong to the current user."})
         }
 
         // Then select all the messages from the selected chat from a logged in user
-        const [rows2] = await db.query(`SELECT * FROM messages WHERE messages.chat_id = ?`, [chatId])
-        return res.json(rows2) 
+        const [allMessages] = await db.query(`SELECT * FROM messages WHERE messages.chat_id = ?`, [chatId])
+        return res.json(allMessages) 
     }
 
     catch(error) {
@@ -40,7 +40,7 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
 })
 
 
-// Add and save a new user question to the specified chat
+// Add and save a new user message to the selected chat
 router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
     // Get the user id
     const userId = req.session.userId
@@ -54,8 +54,8 @@ router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
     try {
         const db = connectToDB()
 
-        // First see if the specified chat has the same user id as the current logged in user
-        const [rows] = await db.query(
+        // First see if the selected chat has the same user id as the current logged in user
+        const [selectedChat] = await db.query(
             `SELECT * FROM chats 
             INNER JOIN users ON users.id = chats.user_id 
             WHERE chats.id = ? AND users.id = ?`,
@@ -63,13 +63,16 @@ router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
         )
 
         // If the user is attempting to add a message to a chat that does not belong to the current user, send an error message
-        if(rows.length === 0) {
+        if(selectedChat.length === 0) {
             return res.status(404).json({message: "Cannot add a new message to a chat that does not belong to the current user."})
         }
 
         // Then, add the new message
-        await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "user", content])
-        return res.status(201).json({message: "A new message was added to the current chat!"})
+        const [result] = await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "user", content])
+
+        // Finally, get back the newely added message and return that back
+        const newMessage = await db.query("SELECT * FROM messages WHERE id = ?", [result.insertId])
+        return res.status(201).json(newMessage[0])
     }
 
     catch(error) {
@@ -78,7 +81,7 @@ router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
 })
 
 
-// Get a response from the AI chatbot based on the previous chat history of the specified chat, then save that response afterwards
+// Get a response from the AI chatbot based on the previous chat history of the selected chat, then save that response afterwards
 // It is assumed that the above route was ran before this one meaning the latest message will be a question from the user
 router.post("/add_AI_response/:id", authorizeMiddleware, async (req, res) => {
     // Get the user id
@@ -91,7 +94,7 @@ router.post("/add_AI_response/:id", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // First see if the specified chat has the same user id as the current logged in user
-        const [rows] = await db.query(
+        const [selectedChat] = await db.query(
             `SELECT * FROM chats 
             INNER JOIN users ON users.id = chats.user_id 
             WHERE chats.id = ? AND users.id = ?`,
@@ -99,7 +102,7 @@ router.post("/add_AI_response/:id", authorizeMiddleware, async (req, res) => {
         )
 
         // If the user is attempting to add a message to a chat that does not belong to the current user, send an error message
-        if(rows.length === 0) {
+        if(selectedChat.length === 0) {
             return res.status(404).json({message: "Cannot add a new message to a chat that does not belong to the current user."})
         }
 
@@ -115,9 +118,12 @@ router.post("/add_AI_response/:id", authorizeMiddleware, async (req, res) => {
         // Provide this message history to the chatbot and get a response back
         const ai_response = await chatbot(chatHistory)
 
-        // Finally, add the ai_response to the database, and send it back to the user too
-        await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "assistant", ai_response])
-        return res.status(201).json(ai_response)
+        // Then, add the ai_response to the database
+        const [result] = await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "assistant", ai_response])
+        
+        // Finally, get back the newely added message and return that back
+        const [newMessage] = await db.query("SELECT * FROM messages WHERE id = ?", [result.insertId])
+        return res.status(201).json(newMessage[0])
     }
 
     catch(error) {

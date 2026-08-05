@@ -16,8 +16,8 @@ router.post('/signup', async (req, res) => {
         const db = connectToDB()
 
         // If this user already exists, then don't them sign in
-        const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email])
-        if(rows.length > 0) {
+        const [result] = await db.query('SELECT * FROM users WHERE email = ?', [email])
+        if(result.length > 0) {
             return res.status(409).json({message: "A user associated with this email already exists."})
         }
 
@@ -46,22 +46,22 @@ router.post('/login', async (req, res) => {
         const db = connectToDB()
 
         // If user does not exists, then don't log them in
-        const [rows] = await db.query('SELECT * FROM users WHERE username = ? AND email = ?', [username, email])
-        if(rows.length === 0) {
+        const [result] = await db.query('SELECT * FROM users WHERE username = ? AND email = ?', [username, email])
+        if(result.length === 0) {
             return res.status(404).json({message: "There is no user associated with this username and email."})
         }
 
         // Also make sure that the password matches
-        const checkPassword = await bcrypt.compare(password, rows[0].password)
+        const checkPassword = await bcrypt.compare(password, result[0].password)
         if(!checkPassword) {
             return res.status(401).json({message: "Incorrect password."})
         }
 
         // Create the user session
-        req.session.userId = rows[0].id;
+        req.session.userId = result[0].id;
         req.session.userName = username;
         
-        return res.status(200).json({userId: rows[0].id, username: username})
+        return res.status(200).json({userId: result[0].id, username: username})
     } 
 
     catch(error) {

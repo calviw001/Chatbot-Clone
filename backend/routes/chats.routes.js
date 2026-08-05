@@ -14,8 +14,8 @@ router.get("/get", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // Then select all the chats with that user id
-        const [rows] = await db.query("SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC", [userId])
-        return res.json(rows) 
+        const [allChats] = await db.query("SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC", [userId])
+        return res.json(allChats) 
     }
 
     catch(error) {
@@ -24,7 +24,7 @@ router.get("/get", authorizeMiddleware, async (req, res) => {
 })
 
 
-// Select a selected chat from the user
+// Select just a selected chat from the user
 router.get("/get/:id", authorizeMiddleware, async (req, res) => {
     // Get the chat id
     const chatId = req.params.id
@@ -35,9 +35,9 @@ router.get("/get/:id", authorizeMiddleware, async (req, res) => {
     try {
         const db = connectToDB()
 
-        // Then select the just the selected caht
-        const [rows] = await db.query("SELECT * FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
-        return res.json(rows) 
+        // Then select the just the selected chat
+        const [selectedChat] = await db.query("SELECT * FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
+        return res.json(selectedChat) 
     }
 
     catch(error) {
@@ -83,10 +83,10 @@ router.delete("/delete/:id", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // Then delete the chat
-        const [result] = await db.query("DELETE FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
+        const [deletedChat] = await db.query("DELETE FROM chats WHERE id = ? AND user_id = ?", [chatId, userId])
 
         // Send a failure message if nothing was deleted
-        if(!result.affectedRows || result.affectedRows === 0) {
+        if(!deletedChat.affectedRows || deletedChat.affectedRows === 0) {
             return res.status(404).json({message: "Chat failed to delete."})
         }
         return res.status(200).json({message: "Chat was deleted."})
