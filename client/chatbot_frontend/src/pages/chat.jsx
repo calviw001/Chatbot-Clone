@@ -48,6 +48,39 @@ const Chat = () => {
     fetchAllChatMessages()
   }, [chatId])
 
+  // Add new user message and AI message functionality
+  const handleNewMessages = async e => {
+    e.preventDefault()
+
+    // Set up the input to the chats/messages/add_user_question/:id route
+    const userInput = {
+        "content": inputMessage.trim()
+    }
+
+    try {
+      // Throw an error if the user failed to enter in a question
+      if (!inputMessage.trim()) {
+          throw new Error("Please ask a question.")
+      }
+
+      // Attempt to save and display the new user message
+      const userMessage = await axios.post(`http://localhost:8000/chats/messages/add_user_question/${chatId}`, userInput, { withCredentials: true })
+      console.log(userMessage.data)
+      setUserChatMessages(prev => [...prev, userMessage.data])
+
+      // Then attempt to save and display a new message from the AI as a response to the new user message
+      const aiMessage = await axios.post(`http://localhost:8000/chats/messages/add_AI_response/${chatId}`, {}, { withCredentials: true })
+      setUserChatMessages(prev => [...prev, aiMessage.data])
+
+      // Clear the input box
+      setInputMessage("")
+    } catch (error) {
+
+      // If an error occured, just print it out for now
+      console.log("Failed to display new messages: ", error.response?.data?.message || error.message)
+    }
+  }
+
   // Display 'Loading...' instead of the main content while waiting to check if there is a user currently logged in 
   if (isLoading) return <div>Loading...</div>
   if (!user) return null
@@ -85,7 +118,7 @@ const Chat = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
           />
-          <button className='flex justify-start cursor-pointer'><GoPlus size={24}/></button>
+          <button className='flex justify-start cursor-pointer' onClick={handleNewMessages}><GoPlus size={24}/></button>
         </div>
 
       </main>
