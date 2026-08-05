@@ -71,7 +71,7 @@ router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
         const [result] = await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "user", content])
 
         // Finally, get back the newely added message and return that back
-        const newMessage = await db.query("SELECT * FROM messages WHERE id = ?", [result.insertId])
+        const [newMessage] = await db.query("SELECT * FROM messages WHERE id = ?", [result.insertId])
         return res.status(201).json(newMessage[0])
     }
 
