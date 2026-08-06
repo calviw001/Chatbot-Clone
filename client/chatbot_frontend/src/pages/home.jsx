@@ -10,6 +10,7 @@ const Home = () => {
   // Initialize all variables
   const [isOpen, setIsOpen] = useState(true)
   const [inputMessage, setInputMessage] = useState("")
+  const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(false)
   const {user, isLoading} = useContext(UserContext)
 
   const navigate = useNavigate()
@@ -25,15 +26,35 @@ const Home = () => {
     }
   }, [user, isLoading])
 
-  // Create a new chat, redirect the user the page for the new chat, and then save and display the first user message that was entered in beforehand 
+  // Create a new chat, redirect the user to the page for the new chat, and then save and display the first user message and 
+  // AI response
   const handleNewChatAndFirstMessage = async e => {
-      e.preventDefault()
+    e.preventDefault()
+
+    // Set up the input to the chats/messages/add_user_question/:id route
+    const userInput = {
+        "content": inputMessage.trim()
+    }
 
     try {
       // Throw an error if the user failed to enter in a question
       if (!inputMessage.trim()) {
           throw new Error("Please ask a question.")
       }
+      setIsAddButtonDisabled(true)
+
+      // Create a new chat
+      const userChat = await axios.post(`http://localhost:8000/chats/add`, {}, { withCredentials: true })
+      const userChatId = userChat.data.chatId
+
+      // Add the user message to this new chat
+      await axios.post(`http://localhost:8000/chats/messages/add_user_question/${userChatId}`, userInput, { withCredentials: true })
+
+      // Add the AI response to this new chat too
+      await axios.post(`http://localhost:8000/chats/messages/add_AI_response/${userChatId}`, {}, { withCredentials: true })
+
+      // And finally send the user to that new chat page
+      navigate(`/chat/${userChatId}`)
 
       // Clear the input box
       setInputMessage("")
@@ -41,7 +62,9 @@ const Home = () => {
 
       // If an error occured, just print it out for now
       console.log("Failed to create a new chat: ", error.response?.data?.message || error.message)
-    } 
+    } finally {
+      setIsAddButtonDisabled(false)
+    }
   }
 
   // Display 'Loading...' instead of the main content while waiting to check if there is a user currently logged in 
@@ -73,8 +96,9 @@ const Home = () => {
               className='flex-1 field-sizing-content resize-none p-2 outline-none focus:outline-none max-h-40 overflow-y-auto'
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
+              disabled={isAddButtonDisabled}
             />
-            <button className='flex justify-start cursor-pointer' onClick={handleNewChatAndFirstMessage}><GoPlus size={24}/></button>
+            <button className='flex justify-start cursor-pointer' onClick={handleNewChatAndFirstMessage} disabled={isAddButtonDisabled}><GoPlus size={24}/></button>
           </div>
         </div>
 
