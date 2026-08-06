@@ -61,8 +61,8 @@ router.post("/add", authorizeMiddleware, async (req, res) => {
         const db = connectToDB()
 
         // Then add a new chat
-        await db.query("INSERT INTO chats (`user_id`, `title`) VALUES (?, ?)", [userId, title])
-        return res.status(201).json({message: "A new chat was created!"})
+        const [result] = await db.query("INSERT INTO chats (`user_id`, `title`) VALUES (?, ?)", [userId, title])
+        return res.status(201).json({chatId: result.insertId})
     }
 
     catch(error) {

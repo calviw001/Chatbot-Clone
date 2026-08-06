@@ -2,6 +2,7 @@ import { Router } from "express"
 import connectToDB from "../db/index.js"
 import { authorizeMiddleware } from "../middleware/authorize.js"
 import { chatbot } from "../ai/get_ai_response.js"
+import { createNewChatTitle } from "../utils/generate_chat_title.js"
 
 const router = Router()
 
@@ -69,6 +70,13 @@ router.post("/add_user_question/:id", authorizeMiddleware, async (req, res) => {
 
         // Then, add the new message
         const [result] = await db.query("INSERT INTO messages (chat_id, role, content) VALUES (?, ?, ?)", [chatId, "user", content])
+
+        // If this newely added message is the very first message of the chat, then use it to create a new title for the chat
+        const [messageCount] = await db.query("SELECT COUNT(*) AS count FROM messages WHERE messages.chat_id = ?", [chatId])
+        if(messageCount[0].count === 1) {
+            const newTitle = createNewChatTitle(content)
+            await db.query("UPDATE chats SET title = ? WHERE chats.id = ?", [newTitle, chatId])
+        }
 
         // Finally, get back the newely added message and return that back
         const [newMessage] = await db.query("SELECT * FROM messages WHERE id = ?", [result.insertId])
