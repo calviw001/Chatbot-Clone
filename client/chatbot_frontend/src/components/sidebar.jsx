@@ -4,6 +4,7 @@ import { FiSidebar  } from "react-icons/fi"
 import { IoIosLogOut } from "react-icons/io"
 import { BsThreeDotsVertical } from "react-icons/bs"
 import { CiCirclePlus } from "react-icons/ci";
+import { GoTrash } from "react-icons/go";
 import axios from 'axios'
 import UserContext from '../context/UserContext'
 
@@ -12,6 +13,7 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
 
     // Initialize all variables
     const [userChats, setUserChats] = useState([])
+    const [selectedChat, setSelectedChat] = useState(null)
     const {setUser} = useContext(UserContext)
 
     const navigate = useNavigate()
@@ -51,6 +53,12 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
         }
     }
 
+    // Opening a chat's context menu functionality
+    const handleOpeningContextMenu = async (e, currentChatId) => {
+        // Prevent triggering the event of also navigating to the chat's page too
+        e.stopPropagation()
+        setSelectedChat(currentChatId)
+    }
 
     return (
         <div className={`fixed bg-white min-h-screen z-20 transition-all duration-200 shadow ${isOpen?"w-64":"w-16"}`}>
@@ -76,13 +84,24 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
                     {userChats.map((userChat) => (
                         <div 
                             key={userChat.id} 
-                            className='flex flex-row justify-between w-full p-2 rounded hover:bg-gray-100 cursor-pointer truncate'
+                            className='relative flex flex-row justify-between w-full p-2 rounded hover:bg-gray-100 cursor-pointer'
                             onClick={() => navigate(`/chat/${userChat.id}`)}
                         >
-                            <h1>{userChat.title}</h1>
-                            <button className='rounded hover:bg-gray-300 cursor-pointer'>
+                            {/*Chat title and button to open a chat's context menu*/}
+                            <h1 className='truncate'>{userChat.title}</h1>
+                            <button className='rounded hover:bg-gray-300 cursor-pointer' onClick={(e) => handleOpeningContextMenu(e, userChat.id)}>
                                 <BsThreeDotsVertical />
                             </button>
+
+                            {/*Context menu buttons*/}
+                            <div 
+                                className={`absolute top-full left-0 bg-white w-full shadow rounded z-30 ${selectedChat === userChat.id ? "visible" : "hidden"}`} 
+                            >
+                                <button className='flex flex-row py-3 px-3 hover:bg-gray-300 w-full'>
+                                    <GoTrash size={24}/> 
+                                    <p className='ml-4'>Delete</p>
+                                </button>
+                            </div>
                         </div>
                     ))}
                 </div>
