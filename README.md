@@ -52,6 +52,7 @@ CREATE TABLE messages (
 | GET | `/chats/get` | Get all chats for the logged-in user |
 | GET | `/chats/get/:id` | Get only a specific chat for the logged-in user |
 | POST | `/chats/add` | Create a new chat |
+| DELETE | `/chats/delete/:id` | Delete a specific chat |
 | GET | `/chats/messages/get/:id` | Get all messages in a chat |
 | POST | `/chats/messages/add_user_question/:id` | Save a user message |
 | POST | `/chats/messages/add_AI_response/:id` | Get and save an AI response |
