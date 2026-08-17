@@ -57,7 +57,15 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
     const handleOpeningContextMenu = async (e, currentChatId) => {
         // Prevent triggering the event of also navigating to the chat's page too
         e.stopPropagation()
-        setSelectedChat(currentChatId)
+
+        // If this chat's context menu is already open, close it.
+        if (selectedChat === currentChatId) {
+            setSelectedChat(null)
+        } 
+        // If not, then open it
+        else {
+            setSelectedChat(currentChatId)
+        }
     }
 
     return (
@@ -97,7 +105,7 @@ const Sidebar = ({ isOpen , setIsOpen}) => {
                             <div 
                                 className={`absolute top-full left-0 bg-white w-full shadow rounded z-30 ${selectedChat === userChat.id ? "visible" : "hidden"}`} 
                             >
-                                <button className='flex flex-row py-3 px-3 hover:bg-gray-300 w-full'>
+                                <button className='flex flex-row py-3 px-3 hover:bg-gray-100 cursor-pointer w-full'>
                                     <GoTrash size={24}/> 
                                     <p className='ml-4'>Delete</p>
                                 </button>
