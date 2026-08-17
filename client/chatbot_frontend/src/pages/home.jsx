@@ -88,9 +88,8 @@ const Home = () => {
       {/*Sidebar*/}
       <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      <main
-        className={`flex-1 ml-14 transition-all duration-200 flex flex-col min-h-screen ${isOpen ? "lg:ml-64" : "lg:ml-14"}`}
-      >
+      <main className={`flex-1 ml-14 transition-all duration-200 flex flex-col min-h-screen ${isOpen ? "lg:ml-64" : "lg:ml-14"}`}>
+        
         {/*Header bar*/}
         <header className="bg-white sticky top-0 z-10 flex justify-end p-4 shadow">
           <div className="bg-gray-300 w-10 h-10 rounded-full"></div>
