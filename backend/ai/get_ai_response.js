@@ -2,8 +2,8 @@ import OpenAI from "openai";
 
 // Initialize the OpenAI client
 const client = new OpenAI({
-    baseURL: process.env.AI_URL,   // The API endpoint URL
-    apiKey: process.env.AI_API_KEY // The authentication key for the API
+  baseURL: process.env.AI_URL, // The API endpoint URL
+  apiKey: process.env.AI_API_KEY, // The authentication key for the API
 });
 
 // Send a message history to an AI chatbot and then return the response back
