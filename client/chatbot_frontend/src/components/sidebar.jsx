@@ -75,9 +75,37 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     }
   };
 
+  // Deleting a chat
+  const handleDelete = async (e, currentChatId) => {
+    e.preventDefault();
+
+    // Prevent triggering the event of also navigating to the chat's page too
+    e.stopPropagation();
+
+    try {
+        // Attempt to delete the chat
+        await axios.delete(
+            `http://localhost:8000/chats/delete/${currentChatId}`,
+            { withCredentials: true },
+        );
+
+        // If successful, remove the chat from the displayed list of chats too
+        setUserChats((prev) => prev.filter(eachChat => eachChat.id !== currentChatId))
+
+        // And also close the context menu of the now deleted chat
+        setSelectedChat(null);
+    } catch (error) {
+      // If an error occured, just print it out for now
+      console.log(
+        "Failed to delete the chat: ",
+        error.response?.data?.message || error.message,
+      );
+    }
+  };
+
   return (
     <div className={`fixed bg-white min-h-screen z-20 transition-all duration-200 shadow ${isOpen ? "w-64" : "w-16"}`}>
-        
+
       {/*Title and sidebar button*/}
       <div className="p-4 flex justify-between items-center shadow">
         <div className={`text-xl font-bold ${isOpen ? "visible" : "hidden"}`}>
@@ -125,7 +153,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <div
                 className={`absolute top-full left-0 bg-white w-full shadow rounded z-30 ${selectedChat === userChat.id ? "visible" : "hidden"}`}
               >
-                <button className="flex flex-row py-3 px-3 hover:bg-gray-100 cursor-pointer w-full">
+                {/*Delete button*/}
+                <button 
+                    className="flex flex-row py-3 px-3 hover:bg-gray-100 cursor-pointer w-full"
+                    onClick={(e) => handleDelete(e, userChat.id)}
+                >
                   <GoTrash size={24} />
                   <p className="ml-4">Delete</p>
                 </button>
