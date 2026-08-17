@@ -8,7 +8,7 @@ import { GoTrash } from "react-icons/go";
 import axios from "axios";
 import UserContext from "../context/UserContext";
 
-const Sidebar = ({ isOpen, setIsOpen }) => {
+const Sidebar = ({ isOpen, setIsOpen, isProcessing }) => {
   // Initialize all variables
   const [userChats, setUserChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -129,8 +129,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
       {/*New chat button*/}
       <button
-        className="absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 mt-4 cursor-pointer"
+        className={`absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 mt-4 ${isProcessing ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
         onClick={() => navigate("/")}
+        disabled={isProcessing}
       >
         <CiCirclePlus size={24} />
         <span className={`font-bold ${isOpen ? "visible" : "hidden"}`}>
@@ -145,14 +146,15 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           {userChats.map((userChat) => (
             <div
               key={userChat.id}
-              className="relative flex flex-row justify-between w-full p-2 rounded hover:bg-gray-100 cursor-pointer"
-              onClick={() => navigate(`/chat/${userChat.id}`)}
+              className={`relative flex flex-row justify-between w-full p-2 rounded hover:bg-gray-100 ${isProcessing ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
+              onClick={() => {if (!isProcessing) navigate(`/chat/${userChat.id}`);}}
             >
               {/*Chat title and button to open a chat's context menu*/}
               <h1 className="truncate">{userChat.title}</h1>
               <button
-                className="rounded hover:bg-gray-300 cursor-pointer"
+                className={`rounded hover:bg-gray-300 ${isProcessing ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
                 onClick={(e) => handleOpeningContextMenu(e, userChat.id)}
+                disabled={isProcessing}
               >
                 <BsThreeDotsVertical />
               </button>
@@ -163,8 +165,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               >
                 {/*Delete button*/}
                 <button 
-                    className="flex flex-row py-3 px-3 hover:bg-gray-100 cursor-pointer w-full"
+                    className={`flex flex-row py-3 px-3 hover:bg-gray-100 w-full ${isProcessing ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
                     onClick={(e) => handleDelete(e, userChat.id)}
+                    disabled={isProcessing}
                 >
                   <GoTrash size={24} />
                   <p className="ml-4">Delete</p>
@@ -177,8 +180,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
       {/*Logout button*/}
       <button
-        className="absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 bottom-10 cursor-pointer"
+        className={`absolute flex flex-row gap-2 items-center left-1/2 -translate-x-1/2 bottom-10 ${isProcessing ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
         onClick={handleLogout}
+        disabled={isProcessing}
       >
         <IoIosLogOut size={24} />
         <span className={`font-bold ${isOpen ? "visible" : "hidden"}`}>

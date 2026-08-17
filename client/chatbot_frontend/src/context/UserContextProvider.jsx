@@ -5,6 +5,7 @@ import UserContext from "./UserContext";
 const UserContextProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Holds data of the logged in user
   const [isLoading, setIsLoading] = useState(true); // Used to check whether the 'auth/user' route is done running or not
+  const [isProcessing, setIsProcessing] = useState(false); // Used to check whether the user has asked a question and now needs to wait for the AI chatbot to provide a response before any other action can be done
 
   useEffect(() => {
     // Check whether there is a valid session or not by calling the 'auth/user' route
@@ -30,7 +31,7 @@ const UserContextProvider = ({ children }) => {
 
   return (
     // Make these three variables avaliable to any component wrapped inside of it
-    <UserContext.Provider value={{ user, setUser, isLoading }}>
+    <UserContext.Provider value={{ user, setUser, isLoading, isProcessing, setIsProcessing }}>
       {children}
     </UserContext.Provider>
   );

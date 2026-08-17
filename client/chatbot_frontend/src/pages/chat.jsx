@@ -12,7 +12,7 @@ const Chat = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [inputMessage, setInputMessage] = useState("");
   const [isAddButtonDisabled, setIsAddButtonDisabled] = useState(false);
-  const { user, isLoading } = useContext(UserContext);
+  const { user, isLoading, isProcessing, setIsProcessing } = useContext(UserContext);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,6 +66,7 @@ const Chat = () => {
         throw new Error("Please ask a question.");
       }
       setIsAddButtonDisabled(true);
+      setIsProcessing(true);
 
       // Attempt to save and display the new user message
       const userMessage = await axios.post(
@@ -94,6 +95,7 @@ const Chat = () => {
       );
     } finally {
       setIsAddButtonDisabled(false);
+      setIsProcessing(false);
     }
   };
 
@@ -104,10 +106,10 @@ const Chat = () => {
   return (
     <div className="flex bg-gray-100 min-h-screen">
       {/*Sidebar*/}
-      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} isProcessing={isProcessing}/>
 
       <main className={`flex-1 ml-14 transition-all duration-200 ${isOpen ? "lg:ml-64" : "lg:ml-14"}`}>
-        
+
         {/*Header bar*/}
         <header className="bg-white sticky top-0 z-10 flex justify-end p-4 shadow">
           <div className="bg-gray-300 w-10 h-10 rounded-full"></div>
@@ -138,7 +140,7 @@ const Chat = () => {
             disabled={isAddButtonDisabled}
           />
           <button
-            className="flex justify-start cursor-pointer"
+            className={`flex justify-start ${isAddButtonDisabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
             onClick={handleNewMessages}
             disabled={isAddButtonDisabled}
           >
