@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FiSidebar } from "react-icons/fi";
 import { IoIosLogOut } from "react-icons/io";
 import { BsThreeDotsVertical } from "react-icons/bs";
@@ -15,6 +15,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
   const { setUser } = useContext(UserContext);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const chatId = location.pathname.split("/")[2];
 
   // Get all of the user's chats from the database
   useEffect(() => {
@@ -94,6 +97,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
         // And also close the context menu of the now deleted chat
         setSelectedChat(null);
+
+        // If the user deleted the chat that they were currently on, redirect them back to the home page
+        if (chatId == currentChatId) {
+            navigate("/")
+        }
     } catch (error) {
       // If an error occured, just print it out for now
       console.log(
