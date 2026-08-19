@@ -11,6 +11,8 @@ import Login from "./pages/login.jsx";
 import Home from "./pages/home.jsx";
 import Chat from "./pages/chat.jsx";
 import UserContextProvider from "./context/UserContextProvider.jsx";
+import { ToastContainer, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +29,19 @@ const router = createBrowserRouter(
 function App() {
   return (
     <UserContextProvider>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       <RouterProvider router={router} />
     </UserContextProvider>
   );
