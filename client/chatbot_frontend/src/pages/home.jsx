@@ -4,6 +4,7 @@ import { GoPlus } from "react-icons/go";
 import axios from "axios";
 import UserContext from "../context/UserContext";
 import Sidebar from "../components/sidebar";
+import { toast, Bounce } from 'react-toastify';
 
 const Home = () => {
   // Initialize all variables
@@ -70,11 +71,20 @@ const Home = () => {
       // Clear the input box
       setInputMessage("");
     } catch (error) {
-      // If an error occured, just print it out for now
-      console.log(
-        "Failed to create a new chat: ",
-        error.response?.data?.message || error.message,
-      );
+      // If an error occured, display a popup with an error message
+      const errorMessage = error.response?.data?.message || error.message;
+      const notify = () => toast.error(`Failed to create a new chat: ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      notify();
     } finally {
       setIsAddButtonDisabled(false);
       setIsProcessing(false);

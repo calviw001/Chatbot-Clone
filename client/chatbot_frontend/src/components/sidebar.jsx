@@ -7,6 +7,7 @@ import { CiCirclePlus } from "react-icons/ci";
 import { GoTrash } from "react-icons/go";
 import axios from "axios";
 import UserContext from "../context/UserContext";
+import { toast, Bounce } from 'react-toastify';
 
 const Sidebar = ({ isOpen, setIsOpen, isProcessing }) => {
   // Initialize all variables
@@ -29,11 +30,20 @@ const Sidebar = ({ isOpen, setIsOpen, isProcessing }) => {
         });
         setUserChats(res.data);
       } catch (error) {
-        // If an error occured, just print it out for now
-        console.log(
-          "Failed to fetch chats: ",
-          error.response?.data?.message || error.message,
-        );
+        // If an error occured, display a popup with an error message
+        const errorMessage = error.response?.data?.message || error.message;
+        const notify = () => toast.error(`Failed to fetch chats: ${errorMessage}`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        notify();
       }
     };
     fetchAllChats();
@@ -55,11 +65,20 @@ const Sidebar = ({ isOpen, setIsOpen, isProcessing }) => {
       setUser(null);
       navigate("/auth/login");
     } catch (error) {
-      // If an error occured, just print it out for now
-      console.log(
-        "Failed to logout: ",
-        error.response?.data?.message || error.message,
-      );
+      // If an error occured, display a popup with an error message
+      const errorMessage = error.response?.data?.message || error.message;
+      const notify = () => toast.error(`Failed to logout: ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      notify();
     }
   };
 
@@ -103,11 +122,20 @@ const Sidebar = ({ isOpen, setIsOpen, isProcessing }) => {
             navigate("/")
         }
     } catch (error) {
-      // If an error occured, just print it out for now
-      console.log(
-        "Failed to delete the chat: ",
-        error.response?.data?.message || error.message,
-      );
+      // If an error occured, display a popup with an error message
+      const errorMessage = error.response?.data?.message || error.message;
+      const notify = () => toast.error(`Failed to delete chat: ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      notify();
     }
   };
 

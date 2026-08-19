@@ -5,6 +5,7 @@ import axios from "axios";
 import UserContext from "../context/UserContext";
 import Sidebar from "../components/sidebar";
 import MessageTextBox from "../components/messagetextbox";
+import { toast, Bounce } from 'react-toastify';
 
 const Chat = () => {
   // Initialize all variables
@@ -41,11 +42,20 @@ const Chat = () => {
         console.log(res.data);
         setUserChatMessages(res.data);
       } catch (error) {
-        // If an error occured, just print it out for now
-        console.log(
-          "Failed to fetch chat messages: ",
-          error.response?.data?.message || error.message,
-        );
+        // If an error occured, display a popup with an error message
+        const errorMessage = error.response?.data?.message || error.message;
+        const notify = () => toast.error(`Failed to fetch chat messages: ${errorMessage}`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        notify();
       }
     };
     fetchAllChatMessages();
@@ -88,11 +98,20 @@ const Chat = () => {
       // Clear the input box
       setInputMessage("");
     } catch (error) {
-      // If an error occured, just print it out for now
-      console.log(
-        "Failed to display new messages: ",
-        error.response?.data?.message || error.message,
-      );
+      // If an error occured, display a popup with an error message
+      const errorMessage = error.response?.data?.message || error.message;
+      const notify = () => toast.error(`Failed to display new messages: ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      notify();
     } finally {
       setIsAddButtonDisabled(false);
       setIsProcessing(false);

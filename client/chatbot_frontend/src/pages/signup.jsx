@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast, Bounce } from 'react-toastify';
 
 const Signup = () => {
   // Initialize all variables
@@ -39,11 +40,20 @@ const Signup = () => {
       });
       navigate("/auth/login");
     } catch (error) {
-      // If an error occured, just print it out for now
-      console.log(
-        "Failed to sign up: ",
-        error.response?.data?.message || error.message,
-      );
+      // If an error occured, display a popup with an error message
+      const errorMessage = error.response?.data?.message || error.message;
+      const notify = () => toast.error(`Failed to sign up: ${errorMessage}`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+      notify();
     }
   };
 
